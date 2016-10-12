@@ -100,7 +100,7 @@ def check_status(cam):
         print "could not find camera to check status"
         return
     elif status["batt1"] < 50:
-        print "warning: battery is less than 50%"
+        print "warning: battery is remaining is:", str(status["batt1"])
     elif status["picsremaining"] < 100:
         print "warning: less than 100 pictures remaining"
     elif status["overheated"] == True:
