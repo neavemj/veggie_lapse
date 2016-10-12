@@ -11,7 +11,7 @@ import time
 
 # some globals
 # how long to wait for camera to turn on, etc. 
-sleep_time = 5
+sleep_time = 10
 
 # little functions for controlling the camera
 
@@ -35,7 +35,7 @@ def connect_gopro():
     established wifi connection. 
     checks the status to see if successful or not.
     """
-    cam = GoProHero(password="")
+    cam = GoProHero(password="matts_gopro")
     time.sleep(sleep_time)
     status = cam.status()
     if status["summary"] == "notfound":
@@ -82,7 +82,7 @@ def take_photo(cam):
     attempts to take a photo
     result is boolean
     """
-    result = cam.command("power", "on")
+    result = cam.command("record", "on")
     time.sleep(sleep_time)
     if result == False:
         print "could not take photo"
@@ -151,7 +151,7 @@ logging.basicConfig()
 
 sched = BlockingScheduler()
 
-trigger = CronTrigger(second="25-30")
+trigger = CronTrigger(second="30")
 #trigger = CronTrigger(hour="5-22")
 
 sched.add_job(main_activation, trigger)
