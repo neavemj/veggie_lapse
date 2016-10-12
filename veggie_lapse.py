@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 
 # timelapse of veg
 # imports required for gopro control and scheduling
@@ -9,13 +9,18 @@ from apscheduler.triggers.cron import CronTrigger
 import logging
 import time
 
+# some globals
+# how long to wait for camera to turn on, etc. 
+sleep_time = 5
+
 # little functions for controlling the camera
 
 def print_time():
     print time.asctime()
 
 def connect_gopro_wifi():
-    if successfull:
+    success = 1
+    if success:
         return True
     else:
         print "could not connect to wifi"
@@ -31,7 +36,7 @@ def connect_gopro():
     checks the status to see if successful or not.
     """
     cam = GoProHero(password="")
-    time.sleep(10)
+    time.sleep(sleep_time)
     status = cam.status()
     if status["summary"] == "notfound":
         print "could not connect to camera"
@@ -46,7 +51,7 @@ def wake_gopro(cam):
     time.sleep is used to ensure time for the camera to wake
     """
     result = cam.command("power", "on")
-    time.sleep(10)
+    time.sleep(sleep_time)
     if result == False:
         print "could not wake gopro"
     return result
@@ -56,18 +61,18 @@ def sleep_gopro(cam):
     attempts to sleep the gopro
     """
     result = cam.command("power", "sleep")
-    time.sleep(10)
+    time.sleep(sleep_time)
     if result == False:
         print "could not sleep gopro"
 
 def still_gopro(cam):
     """
-    changes the camera mode to still or photo
+    changes the camera mode to still / photo
     normally it will start up in video mode
     again the result will be boolean (true for successful)
     """
     result = cam.command("mode", "still")
-    time.sleep(10)
+    time.sleep(sleep_time)
     if result == False:
         print "could not put gopro in camera / still mode"
     return result
@@ -78,7 +83,7 @@ def take_photo(cam):
     result is boolean
     """
     result = cam.command("power", "on")
-    time.sleep(10)
+    time.sleep(sleep_time)
     if result == False:
         print "could not take photo"
     else:
@@ -90,10 +95,16 @@ def check_status(cam):
     maybe the charger is not working or the memory is full?
     """
     status = cam.status()
-    if status["batt1"] < 50:
+    if status["summary"] == "notfound" or\
+       status["summary"] == "sleeping":
+        print "could not find camera to check status"
+        return
+    elif status["batt1"] < 50:
         print "warning: battery is less than 50%"
-    if status["pics remaining"] < 100:
+    elif status["picsremaining"] < 100:
         print "warning: less than 100 pictures remaining"
+    elif status["overheated"] == True:
+        print "warning: cameria is overheating"
     
 
 def main_activation():
@@ -106,19 +117,22 @@ def main_activation():
     try again at the next interval.
     """
     print_time()
-    print "attemping to take a photo.."
+    print "attemping to activate and take a photo.."
     
-    if not connect_gopro_wifi():
+    wifi = connect_gopro_wifi()
+    if wifi == False:
         return
     
-    if not connect_gopro():
-        return
     cam = connect_gopro()
-
-    if not wake_gopro(cam):
+    if cam == False:
         return
     
-    if not still_gopro(cam):
+    awake = wake_gopro(cam)
+    if awake == False:
+        return
+    
+    still_mode = still_gopro(cam)
+    if still_mode == False:
         return
     
     take_photo(cam)
@@ -137,8 +151,9 @@ logging.basicConfig()
 
 sched = BlockingScheduler()
 
-trigger = CronTrigger(second=5)
+trigger = CronTrigger(second="25-30")
+#trigger = CronTrigger(hour="5-22")
 
-sched.add_job(print_time, trigger)
+sched.add_job(main_activation, trigger)
 
 sched.start()
