@@ -18,17 +18,6 @@ sleep_time = 10
 def print_time():
     print time.asctime()
 
-def connect_gopro_wifi():
-    success = 1
-    if success:
-        return True
-    else:
-        print "could not connect to wifi"
-        return False
-
-def connect_internet():
-    pass
-
 def connect_gopro():
     """
     attempts to connect to the gopro through the 
@@ -88,6 +77,7 @@ def take_photo(cam):
         print "could not take photo"
     else:
         print "successfully took a photo"
+    return result
 
 def check_status(cam):
     """
@@ -105,7 +95,24 @@ def check_status(cam):
         print "warning: less than 100 pictures remaining"
     elif status["overheated"] == True:
         print "warning: cameria is overheating"
+    elif status["charging"] == "no":
+    	print "warning: camera has stopped charging!"
+
+def write_log(cam, photo_taken):
+    """
     
+    """    
+    with open("veggie.log", "a") as fl:
+    	fl.write(time.asctime() + "\n")
+    	if photo_taken == True:
+    		fl.write("photo taken" + "\n")
+    	else:
+    		fl.write("Unable to take photo" + "\n")
+    	status = cam.status() 
+    	fl.write("Remaining Battery:" + str(status["batt1"]) + "\n")
+    	fl.write("Remaining Pictures:" + str(status["picsremaining"]) + "\n")
+    	fl.write("----------------------------------------------------------\n")    	
+
 
 def main_activation():
     """ 
@@ -119,26 +126,23 @@ def main_activation():
     print_time()
     print "attemping to activate and take a photo.."
     
-    wifi = connect_gopro_wifi()
-    if wifi == False:
-        return
-    
     cam = connect_gopro()
-    if cam == False:
-        return
+    #if cam == False:
+    #    return
     
     awake = wake_gopro(cam)
-    if awake == False:
-        return
+    #if awake == False:
+    #    return
     
     still_mode = still_gopro(cam)
-    if still_mode == False:
-        return
+    #if still_mode == False:
+    #    return
     
-    take_photo(cam)
+    photo_taken = take_photo(cam)
+    
     check_status(cam)
+    write_log(cam, photo_taken)
     sleep_gopro(cam)
-    connect_internet()
 
 # main scheduling calls
 # decided to use "apscheduler" for this
@@ -151,8 +155,8 @@ logging.basicConfig()
 
 sched = BlockingScheduler()
 
-trigger = CronTrigger(second="30")
-#trigger = CronTrigger(hour="5-22")
+#trigger = CronTrigger(second="30")
+trigger = CronTrigger(hour="5-22")
 
 sched.add_job(main_activation, trigger)
 
