@@ -24,6 +24,7 @@ def connect_gopro():
     established wifi connection. 
     checks the status to see if successful or not.
     """
+    print "connecting to gopro"
     cam = GoProHero(password="matts_gopro")
     time.sleep(sleep_time)
     status = cam.status()
@@ -39,6 +40,7 @@ def wake_gopro(cam):
     the result is boolean (true if successful)
     time.sleep is used to ensure time for the camera to wake
     """
+    print "waking gopro"
     result = cam.command("power", "on")
     time.sleep(sleep_time)
     if result == False:
@@ -49,6 +51,7 @@ def sleep_gopro(cam):
     """
     attempts to sleep the gopro
     """
+    print "putting gopro to sleep"
     result = cam.command("power", "sleep")
     time.sleep(sleep_time)
     if result == False:
@@ -60,6 +63,7 @@ def still_gopro(cam):
     normally it will start up in video mode
     again the result will be boolean (true for successful)
     """
+    print "putting gopro in camera mode"
     result = cam.command("mode", "still")
     time.sleep(sleep_time)
     if result == False:
@@ -71,6 +75,7 @@ def take_photo(cam):
     attempts to take a photo
     result is boolean
     """
+    print "taking photo"
     result = cam.command("record", "on")
     time.sleep(sleep_time)
     if result == False:
@@ -84,6 +89,7 @@ def check_status(cam):
     check the camera status after each photo
     maybe the charger is not working or the memory is full?
     """
+    print "checking gopro status"
     status = cam.status()
     if status["summary"] == "notfound" or\
        status["summary"] == "sleeping":
@@ -102,7 +108,8 @@ def write_log(cam, photo_taken):
     """
     
     """    
-    with open("veggie.log", "a") as fl:
+    print "writing veggie.log"
+    with open("/Users/Matt/Desktop/veggie_lapse/veggie.log", "a") as fl:
     	fl.write(time.asctime() + "\n")
     	if photo_taken == True:
     		fl.write("photo taken" + "\n")
