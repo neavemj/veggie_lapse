@@ -130,26 +130,43 @@ def main_activation():
     Note that this does not affect the scheduler, which will just 
     try again at the next interval.
     """
+    print "\n"
     print_time()
     print "attemping to activate and take a photo.."
     
-    cam = connect_gopro()
-    #if cam == False:
-    #    return
+    # try to take a photo 3 times
+    # or else, abandon attempt until next scheduled time
     
-    awake = wake_gopro(cam)
-    #if awake == False:
-    #    return
+    attempt = 0
+    while attempt <= 3:
+    	attempt += 1
+    	
+    	if attempt > 1:
+    		print "retrying..."
+    		
+    	print "\nATTEMPT:", attempt
+    	
+    	cam = connect_gopro()
+    	if cam == False:
+    		continue
     
-    still_mode = still_gopro(cam)
-    #if still_mode == False:
-    #    return
+    	awake = wake_gopro(cam)
+    	if awake == False:
+    		continue
     
-    photo_taken = take_photo(cam)
+    	still_mode = still_gopro(cam)
+    	if still_mode == False:
+    	    continue
     
-    check_status(cam)
-    write_log(cam, photo_taken)
-    sleep_gopro(cam)
+    	photo_taken = take_photo(cam)
+    	if photo_taken == False:
+    		continue
+    
+    	if photo_taken == True:
+    		check_status(cam)
+    		write_log(cam, photo_taken)
+    		sleep_gopro(cam)
+    		break
 
 # main scheduling calls
 # decided to use "apscheduler" for this
