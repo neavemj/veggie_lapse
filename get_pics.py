@@ -45,6 +45,8 @@ if ans == "y":
         print("downloading file:", photo)
         photo_url = go_pro_url + photo 
         wget.download(photo_url, "./photos/")      
+else:
+    print("ok, exiting..")
 
 
 
