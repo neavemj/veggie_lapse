@@ -81,7 +81,7 @@ else:
     print("you have {} new photos to download".format(len(new_photos)))
     ans = raw_input("Would you like to download them now (y/n)? ")
 
-# 4308 is up-side down, 4310, 4311, 4312 wrong spot
+# 4308 is up-side down, 4310, 4311, 4312-4321, 4378, 4379 wrong spot
 
 if ans == "y":
 	photos_remaining = len(new_photos)
