@@ -180,7 +180,7 @@ logging.basicConfig()
 sched = BlockingScheduler()
 
 #trigger = CronTrigger(second="30")
-trigger = CronTrigger(hour="5-22")
+trigger = CronTrigger(hour="6-20")
 
 sched.add_job(main_activation, trigger)
 

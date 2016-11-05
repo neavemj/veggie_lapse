@@ -81,12 +81,17 @@ else:
     print("you have {} new photos to download".format(len(new_photos)))
     ans = raw_input("Would you like to download them now (y/n)? ")
 
+# 4308 is up-side down, 4310, 4311, 4312 wrong spot
+
 if ans == "y":
+	photos_remaining = len(new_photos)
     for photo in new_photos:
+    	print("photos to download:", str(photos_remaining))
         print("downloading file:", photo)
         photo_url = go_pro_url + photo 
         wget.download(photo_url, "./photos/")
-    print("finished downloading photos")      
+        photos_remaining -= 1
+    print("\nfinished downloading photos")      
 else:
     print("ok, exiting..")
 
