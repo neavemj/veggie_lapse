@@ -165,7 +165,7 @@ def main_activation():
     	if photo_taken == True:
     		check_status(cam)
     		write_log(cam, photo_taken)
-    		sleep_gopro(cam)
+    		#sleep_gopro(cam)
     		break
 
 # main scheduling calls
